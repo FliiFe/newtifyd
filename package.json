@@ -1,0 +1,36 @@
+{
+    "name": "newtifyd",
+    "version": "0.0.1",
+    "description": "A modern, slick notification daemon",
+    "main": "lib",
+    "scripts": {
+        "start": "electron lib",
+        "buildback": "rm -rf lib && babel src -d lib",
+        "buildfront": "cd front && npm run build",
+        "build": "npm run buildback && npm run buildfront",
+        "nodemon": "nodemon -x 'npm run buildback && npm run start'"
+    },
+    "author": "Théophile Cailliau (FliiFe)",
+    "license": "MIT",
+    "homepage": "https://github.com/FliiFe/newtifd",
+    "repository": "github:FliiFe/newtifd",
+    "dependencies": {
+        "chalk": "^2.4.1",
+        "datauri": "^1.1.0",
+        "dbus": "github:FliiFe/node-dbus",
+        "electron": "^2.0.5",
+        "express": "^4.16.3",
+        "file-type": "^8.1.0",
+        "flatten": "^1.0.2",
+        "loglevel": "^1.6.1",
+        "loglevel-plugin-prefix": "^0.8.4",
+        "mz": "^2.7.0"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.0.0-beta.54",
+        "@babel/core": "^7.0.0-beta.54",
+        "@babel/node": "^7.0.0-beta.54",
+        "@babel/preset-env": "^7.0.0-beta.54",
+        "babel-register": "^6.26.0"
+    }
+}
