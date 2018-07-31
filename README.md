@@ -1,4 +1,4 @@
-# newtifd
+# newtifyd
 
 This project aims at making a slick and modern notification daemon.
 
