@@ -1,3 +1,4 @@
 node_modules
 lib/*.js
 front/dist/*
+org.fliife.newtifyd.service
