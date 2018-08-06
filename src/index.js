@@ -13,7 +13,11 @@ import { readFile } from 'mz/fs';
 import { isAbsolute } from 'path';
 import DataURI from 'datauri';
 import ft from 'file-type';
-import { findIcon } from './IconRetreiver'
+import { findIcon } from './IconRetreiver';
+
+import { load } from 'cheerio';
+
+import opn from 'opn';
 
 const colors = {
     TRACE: chalk.magenta,
@@ -75,6 +79,9 @@ daemon.notify = async notification => {
         }
     }
     if(notification.hints['image-data']) log.debug('Got image-data:', notification.hints.icon_data)
+
+    notification = htmlmiddleware(notification);
+
     // Register the notification in the store and get its id
     let id = store.add(notification);
     log.debug(`Assiging id ${id}`);
@@ -89,9 +96,25 @@ daemon.close = front.close = id => {
 front.action = (id, action) => {
     log.debug('Invoking action', action, 'on notification', id);
     daemon.invokeAction(id, action);
+    if(store._store[id].defaulturl && action === 'default') opn(store._store[id].defaulturl);
     store.close(id);
 }
 
 store.addUpdateListener(store => front.update(store));
+
+const htmlmiddleware = notification => {
+    const $ = load(notification.body);
+    const a = $('a').first();
+    const text = a.text();
+    const link = a.attr('href')
+    if(text) notification.appname = text.toLowerCase();
+    $("body > *").not("b,i,u").each(function() {
+        $(this).replaceWith('');
+    });
+    log.debug('Changing body to ', $('body').html())
+    notification.body = $('body').html();
+    notification.defaulturl = link;
+    return notification
+};
 
 process.on('unhandledRejection', r => log.error(r));

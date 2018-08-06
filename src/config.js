@@ -7,5 +7,5 @@ export default {
     devtools: false,
 	serverPort: 3113,
 	devServer: false,
-    loglevel: l.INFO,
+    loglevel: l.DEBUG, // Possible values are DEBUG, INFO, WARN, ERROR
 };

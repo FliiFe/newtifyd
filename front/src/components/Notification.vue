@@ -3,26 +3,26 @@
         <div class="top">
             <div class="left">
                 <img src="../assets/icons/laptop.svg" class="notificationicon"/>
-                {{appname}} •
+                {{notif.appname}} •
                 {{showntime}}
             </div>
             <div class="right">
                 <md-icon class="gear-icon">settings</md-icon>
-                <md-icon class="clear-icon" @click.native="$emit('close', id)">clear</md-icon>
+                <md-icon class="clear-icon" @click.native="$emit('close', notif.id)">clear</md-icon>
             </div>
         </div>
         <div class="body" @click="bodyclick">
             <div class="text">
-                <div class="title" v-html=title></div>
-                <div class="summary-or-body" v-html="body || summary">
+                <div class="title" v-html=notif.title></div>
+                <div class="summary-or-body" v-html="notif.body || notif.summary">
                 </div>
             </div>
-            <div v-if='icon' class="notification-icon">
-                <img :src='icon' />
+            <div v-if='notif.icon' class="notification-icon">
+                <img :src='notif.icon' />
             </div>
         </div>
-        <div v-if="actions && actions.length" class="actions">
-            <md-button v-for='a in shownactions' :key='a.id' class="action" @click="$emit('action',id,a.id)">{{a.text}}</md-button>
+        <div v-if="notif.actions && notif.actions.length" class="actions">
+            <md-button v-for='a in shownactions' :key='a.id' class="action" @click="$emit('action',notif.id,a.id)">{{a.text}}</md-button>
         </div>
     </div>
 </template>
@@ -34,16 +34,15 @@ export default {
     props: {notif: Object},
     data() {
         return {
-            ...this.notif,
             now: Date.now()
         };
     },
     methods: {
         bodyclick() {
             if(this.hasaction('default')) {
-                this.$emit('action', this.id, 'default')
+                this.$emit('action', this.notif.id, 'default')
             } else {
-                this.$emit('close', this.id)
+                this.$emit('close', this.notif.id)
             }
         },
         hasaction(a) {
@@ -52,13 +51,13 @@ export default {
     },
     computed: {
         realactions() {
-            return this.actions.map((el, ind, arr) => ind % 2 ? {id: arr[ind-1], text: el}: undefined).filter(e=>e);
+            return this.notif.actions.map((el, ind, arr) => ind % 2 ? {id: arr[ind-1], text: el}: undefined).filter(e=>e);
         },
         shownactions() {
             return this.realactions.filter(e=>e.id.match(/^\d+$/))
         },
         showntime() {
-            let diff = Math.floor((this.now - this.time) / 60000);
+            let diff = Math.floor((this.now - this.notif.time) / 60000);
             return diff ? diff + 'm' : 'now';
         },
     },
