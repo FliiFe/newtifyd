@@ -17,7 +17,8 @@ install:
 	@sed "s|##SHARED##|$(DESTDIR)$(SHARED)|" ./newtify.in > ./newtify
 	install -Dm755 newtify ${DESTDIR}${PREFIX}/bin/newtify
 	install -Dm644 org.fliife.newtifyd.service ${DESTDIR}${SERVICEDIR_DBUS}/org.fliife.newtifyd.service
-	cp -r . ${DESTDIR}${SHARED}/newtifyd/
+	mkdir -p ${DESTDIR}${SHARED}/newtifyd
+	cp -r ./lib ./node_modules ./front ./package.json ./LICENSE ./org.fliife.newtifyd.service ./package-lock.json ./README.md ${DESTDIR}${SHARED}/newtifyd
 
 clean:
 	rm lib/*.js

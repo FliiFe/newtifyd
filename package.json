@@ -4,7 +4,7 @@
     "description": "A modern, slick notification daemon",
     "main": "lib",
     "scripts": {
-        "start": "electron lib",
+        "start": "electron lib | tee /tmp/newtify.log",
         "buildback": "rm -rf lib && babel src -d lib",
         "buildfront": "cd front && npm run build",
         "build": "npm run buildback && npm run buildfront",

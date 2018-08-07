@@ -3,3 +3,4 @@ lib/*.js
 front/dist/*
 org.fliife.newtifyd.service
 newtify
+release
