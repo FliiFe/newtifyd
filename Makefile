@@ -18,3 +18,9 @@ install:
 	install -Dm755 newtify ${DESTDIR}${PREFIX}/bin/newtify
 	install -Dm644 org.fliife.newtifyd.service ${DESTDIR}${SERVICEDIR_DBUS}/org.fliife.newtifyd.service
 	cp -r . ${DESTDIR}${SHARED}/newtifyd/
+
+clean:
+	rm lib/*.js
+	rm ./org.fliife.newtifyd.service
+	rm ./newtify
+	rm -rf front/dist/*
