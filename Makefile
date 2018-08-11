@@ -10,6 +10,7 @@ endif
 
 build:
 	npm i
+	cd front && npm i
 	npm run build
 
 install:
