@@ -14,8 +14,8 @@ build:
 	npm run build
 
 install:
-	@sed "s|##PREFIX##|$(DESTDIR)$(PREFIX)|" ./org.fliife.newtifyd.service.in > ./org.fliife.newtifyd.service
-	@sed "s|##SHARED##|$(DESTDIR)$(SHARED)|" ./newtify.in > ./newtify
+	@sed "s|##PREFIX##|$(PREFIX)|" ./org.fliife.newtifyd.service.in > ./org.fliife.newtifyd.service
+	@sed "s|##SHARED##|$(SHARED)|" ./newtify.in > ./newtify
 	install -Dm755 newtify ${DESTDIR}${PREFIX}/bin/newtify
 	install -Dm644 org.fliife.newtifyd.service ${DESTDIR}${SERVICEDIR_DBUS}/org.fliife.newtifyd.service
 	mkdir -p ${DESTDIR}${SHARED}/newtifyd
