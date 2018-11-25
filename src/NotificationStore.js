@@ -2,9 +2,9 @@ import {debug} from 'loglevel';
 
 export default class NotificationStore {
     constructor() {
-        this.store = {}
-        this.listeners = []
-        this._id_count=0
+        this.store = {};
+        this.listeners = [];
+        this._id_count=0;
     }
 
     add(notif) {
@@ -17,11 +17,11 @@ export default class NotificationStore {
         } else {
             while(Object.keys('store').includes(id)) id++;
         }
-        this.store[id] = notif
-        let timeout = setTimeout(_ => this.close(id), notif.expire_timeout > 0 ? notif.expire_timeout : 30*1000);
-        this.store[id].timeout = timeout
+        this.store[id] = notif;
+        let timeout = setTimeout(() => this.close(id), notif.expire_timeout > 0 ? notif.expire_timeout : 10*1000);
+        this.store[id].timeout = timeout;
 
-        this.update()
+        this.update();
         return id;
     }
     close(id) {
@@ -29,13 +29,13 @@ export default class NotificationStore {
         if(this.store[id] && this.store[id].timeout)
             clearTimeout(this.store[id].timeout);
         delete this.store[id];
-        this.update()
+        this.update();
     }
     addUpdateListener(fun) {
         this.listeners.push(fun);
     }
     update() {
-        debug('Current store:', this.store)
+        debug('Current store:', this.store);
         this.listeners.forEach(f => f(this.store));
     }
     get _store() {

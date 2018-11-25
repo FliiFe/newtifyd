@@ -74,7 +74,7 @@ html, body {
     margin: 0;
     padding: 0;
     font-family: 'Roboto', sans-serif;
-    background-color: rgba(50,50,50,0);
+    background-color: rgba(200,200,200,0);
     overflow: hidden;
 }
 

@@ -96,7 +96,7 @@ daemon.close = front.close = id => {
 front.action = (id, action) => {
     log.debug('Invoking action', action, 'on notification', id);
     daemon.invokeAction(id, action);
-    if(store._store[id].defaulturl && action === 'default') opn(store._store[id].defaulturl);
+    // if(store._store[id].defaulturl && action === 'default') opn(store._store[id].defaulturl);
     store.close(id);
 }
 

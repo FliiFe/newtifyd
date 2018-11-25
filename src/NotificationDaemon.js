@@ -90,7 +90,7 @@ export default class NotificationDaemon {
 
         this.iface.update();
 
-        this._notify = this._close = _ => undefined;
+        this._notify = this._close = () => undefined;
     }
     set notify(fun) {
         this._notify = fun;
