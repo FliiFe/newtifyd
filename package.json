@@ -5,7 +5,7 @@
     "main": "lib",
     "scripts": {
         "start": "electron lib | tee /tmp/newtify.log",
-        "buildback": "rm -rf lib && babel src -d lib",
+        "buildback": "rm -rf lib && npx babel src -d lib",
         "buildfront": "cd front && npm run build",
         "build": "npm run buildback && npm run buildfront",
         "nodemon": "nodemon -x 'npm run buildback && npm run start'"
