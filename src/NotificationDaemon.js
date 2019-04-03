@@ -1,14 +1,14 @@
-import DBus from 'dbus';
-import { name, version } from '../package.json';
+import DBus from 'dbus'
+import { name, version } from '../package.json'
 
 export default class NotificationDaemon {
     constructor() {
         this.service = DBus.registerService(
             'session',
             'org.freedesktop.Notifications'
-        );
-        this.obj = this.service.createObject('/org/freedesktop/Notifications');
-        this.iface = this.obj.createInterface('org.freedesktop.Notifications');
+        )
+        this.obj = this.service.createObject('/org/freedesktop/Notifications')
+        this.iface = this.obj.createInterface('org.freedesktop.Notifications')
 
         this.iface.addMethod(
             'Notify',
@@ -48,17 +48,17 @@ export default class NotificationDaemon {
                         hints,
                         expire_timeout
                     })
-                );
+                )
             }
-        );
+        )
 
         this.iface.addMethod(
             'CloseNotification',
             { in: DBus.Define(Number) },
             (id, callback) => {
-                callback(this._close(id));
+                callback(this._close(id))
             }
-        );
+        )
 
         this.iface.addMethod(
             'GetCapabilities',
@@ -72,39 +72,39 @@ export default class NotificationDaemon {
                     'body-images',
                     'icon-static',
                     'persistence'
-                ]);
+                ])
             }
-        );
+        )
 
         this.iface.addMethod(
             'GetServerInformation',
             { out: { type: 'ssss' } },
             callback => {
-                callback(null, [name, 'N/A', version, '1.2']);
+                callback(null, [name, 'N/A', version, '1.2'])
             }
-        );
+        )
 
         this.iface.addSignal('ActionInvoked', {
             types: [{type: 'u'},{type: 's'}]
-        });
+        })
 
-        this.iface.update();
+        this.iface.update()
 
-        this._notify = this._close = () => undefined;
+        this._notify = this._close = () => undefined
     }
     set notify(fun) {
-        this._notify = fun;
+        this._notify = fun
     }
     get notify() {
-        return this.notify;
+        return this.notify
     }
     set close(fun) {
-        this._close = fun;
+        this._close = fun
     }
     get close() {
-        return this.close;
+        return this.close
     }
     invokeAction(id, action) {
-        this.iface.emit('ActionInvoked', id, action);
+        this.iface.emit('ActionInvoked', id, action)
     }
 }
