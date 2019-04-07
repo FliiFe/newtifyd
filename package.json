@@ -19,20 +19,19 @@
         "cheerio": "^1.0.0-rc.2",
         "datauri": "^1.1.0",
         "dbus": "github:FliiFe/node-dbus",
-        "electron": "^2.0.18",
         "express": "^4.16.4",
         "file-type": "^8.1.0",
         "flatten": "^1.0.2",
         "loglevel": "^1.6.1",
         "loglevel-plugin-prefix": "^0.8.4",
-        "mz": "^2.7.0",
-        "opn": "^5.5.0"
+        "mz": "^2.7.0"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.3",
         "@babel/core": "^7.4.3",
         "@babel/node": "^7.2.2",
         "@babel/preset-env": "^7.4.3",
-        "babel-register": "^6.26.0"
+        "babel-register": "^6.26.0",
+        "electron": "^2.0.18"
     }
 }
