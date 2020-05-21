@@ -11,13 +11,14 @@ export default class Frontend {
         // server.use('/fs/', express.static('/'));
 
         // Necessary for transparency
-        app.disableHardwareAcceleration()
+        // app.disableHardwareAcceleration()
+        app.commandLine.appendSwitch('enable-transparent-visuals')
 
         server.listen(config.serverPort, () => {
             info(`Frontend running on port ${config.serverPort}`)
 
-            app.on('ready', () => {
-                let {bounds} = screen.getAllDisplays()[config.monitor]
+            app.on('ready', () => setTimeout(() => {
+                let { bounds } = screen.getAllDisplays()[config.monitor]
                 protocol.unregisterProtocol('', () => {
                     this.win = new BrowserWindow({
                         x: bounds.width - config.width,
@@ -31,6 +32,7 @@ export default class Frontend {
                         webPreferences: {
                             // Allow loading of local resources
                             webSecurity: false,
+                            nodeIntegration: true,
                         },
                     })
                     this.win.loadURL(`http://localhost:${config.devServer ? '8080' : config.serverPort}/`)
@@ -43,10 +45,11 @@ export default class Frontend {
                     // The frontend will show the window when there is one.
                     this.win.hide()
                 })
-            })
+            }, 500))
         })
     }
     update(store) {
+        console.log(store)
         this.win.webContents.send('update', store)
     }
     set close(fun) {

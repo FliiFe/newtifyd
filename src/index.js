@@ -1,12 +1,8 @@
-import NotificationDaemon from './NotificationDaemon'
+import NotificationInterface from './NotificationDaemon'
 import NotificationStore from './NotificationStore'
 import Frontend from './Frontend'
 
-import log from 'loglevel'
-import prefix from 'loglevel-plugin-prefix'
-import chalk from 'chalk'
-
-import c from './config'
+import log from './Logger'
 
 import { hostname } from 'os'
 import { readFile } from 'mz/fs'
@@ -17,27 +13,8 @@ import { findIcon } from './IconRetreiver'
 
 import { load } from 'cheerio'
 
-const colors = {
-    TRACE: chalk.magenta,
-    DEBUG: chalk.cyan,
-    INFO: chalk.blue,
-    WARN: chalk.yellow,
-    ERROR: chalk.red
-}
 
-prefix.reg(log)
-log.enableAll()
-log.setDefaultLevel(c.loglevel)
-
-prefix.apply(log, {
-    format(level, name, timestamp) {
-        return `${chalk.gray(`[${timestamp}]`)} ${colors[level.toUpperCase()](
-            level
-        )}`
-    }
-})
-
-const daemon = new NotificationDaemon()
+const daemon = new NotificationInterface()
 const store = new NotificationStore()
 const front = new Frontend()
 
@@ -91,6 +68,8 @@ daemon.close = front.close = id => {
     store.close(id)
 }
 
+daemon.registerDbusService()
+
 front.action = (id, action) => {
     log.debug('Invoking action', action, 'on notification', id)
     daemon.invokeAction(id, action)
@@ -109,7 +88,7 @@ const htmlmiddleware = notification => {
     $('body > *').not('b,i,u').each(function () {
         $(this).replaceWith('')
     })
-    log.debug('Changing body to ', $('body').html())
+    log.debug('Changing body to', $('body').html())
     notification.body = $('body').html()
     notification.defaulturl = link
     return notification

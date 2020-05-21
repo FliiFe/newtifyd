@@ -1,95 +1,66 @@
-import DBus from 'dbus'
-import { name, version } from '../package.json'
+import dbus from 'dbus-next'
+import {name, version} from '../package.json'
+import log from './Logger'
 
-export default class NotificationDaemon {
-    constructor() {
-        this.service = DBus.registerService(
-            'session',
-            'org.freedesktop.Notifications'
-        )
-        this.obj = this.service.createObject('/org/freedesktop/Notifications')
-        this.iface = this.obj.createInterface('org.freedesktop.Notifications')
+const {Interface, method, signal} = dbus.interface
+const bus = dbus.sessionBus()
 
-        this.iface.addMethod(
-            'Notify',
-            {
-                in: [
-                    { type: 's' },
-                    { type: 'u' },
-                    { type: 's' },
-                    { type: 's' },
-                    { type: 's' },
-                    { type: 'as' },
-                    { type: 'a{sv}' },
-                    { type: 'x' }
-                ],
-                out: DBus.Define(Number)
-            },
-            (
-                appname,
-                replaces_id,
-                app_icon,
-                summary,
-                body,
-                actions,
-                hints,
-                expire_timeout,
-                callback
-            ) => {
-                callback(
-                    null,
-                    this._notify({
-                        appname,
-                        replaces_id,
-                        app_icon,
-                        summary,
-                        body,
-                        actions,
-                        hints,
-                        expire_timeout
-                    })
-                )
-            }
-        )
-
-        this.iface.addMethod(
-            'CloseNotification',
-            { in: DBus.Define(Number) },
-            (id, callback) => {
-                callback(this._close(id))
-            }
-        )
-
-        this.iface.addMethod(
-            'GetCapabilities',
-            { out: { type: 'as' } },
-            callback => {
-                callback(null, [
-                    'body',
-                    'actions',
-                    'body-hyperlinks',
-                    'body-markup',
-                    'body-images',
-                    'icon-static',
-                    'persistence'
-                ])
-            }
-        )
-
-        this.iface.addMethod(
-            'GetServerInformation',
-            { out: { type: 'ssss' } },
-            callback => {
-                callback(null, [name, 'N/A', version, '1.2'])
-            }
-        )
-
-        this.iface.addSignal('ActionInvoked', {
-            types: [{type: 'u'},{type: 's'}]
+export default class NotificationInterface extends Interface {
+    @method({inSignature: 'susssasa{sv}i', outSignature: 'u'})
+    Notify(appname, replaces_id, app_icon, summary, body, actions, hints, expire_timeout) {
+        return this._notify({
+            appname,
+            replaces_id,
+            app_icon,
+            summary,
+            body,
+            actions,
+            hints,
+            expire_timeout
         })
+    }
 
-        this.iface.update()
+    @method({inSignature: 'u'})
+    CloseNotification(id) {
+        this._close(id)
+    }
 
+    @method({outSignature: 'as'})
+    GetCapabilities() {
+        return [
+            'body',
+            'actions',
+            'body-hyperlinks',
+            'body-markup',
+            'body-images',
+            'icon-static',
+            'persistence'
+        ]
+    }
+
+    @method({outSignature: 'ssss'})
+    GetServerInformation() {
+        return [name, 'N/A', version, '1.2']
+    }
+
+    @signal({signature: 'us'})
+    ActionInvoked(id, action_key) {
+        return [id, action_key]
+    }
+
+    @signal({signature: 'uu'})
+    NotificationClosed(id, reason) {
+        return [id, reason]
+    }
+
+    async registerDbusService() {
+        await bus.requestName('org.freedesktop.Notifications')
+        bus.export('/org/freedesktop/Notifications', this)
+        log.info('Service registered')
+    }
+
+    constructor() {
+        super('org.freedesktop.Notifications')
         this._notify = this._close = () => undefined
     }
     set notify(fun) {

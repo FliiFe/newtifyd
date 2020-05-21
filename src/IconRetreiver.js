@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import flatten from 'flatten'
 
-const uniq = arr => arr.filter((v, i, a) => a.indexOf(v) === i) 
+const uniq = arr => arr.filter((v, i, a) => a.indexOf(v) === i)
 
 const appDirs = [
     path.join(process.env.HOME, '.local', 'share'),
@@ -16,25 +16,8 @@ const appDirs = [
 ]
 
 // Icon resolutions in priority of checking
-const iconResolutions = [
-    'scalable',
-    '1024x1024',
-    '512x512',
-    '256x256',
-    '192x192',
-    '128x128',
-    '96x96',
-    '72x72',
-    '64x64',
-    '48x48',
-    '40x40',
-    '36x36',
-    '32x32',
-    '24x24',
-    '22x22',
-    '20x20',
-    '16x16'
-]
+const iconResolutions = ['scalable', '1024x1024', '512x512', '256x256', '192x192', '128x128',
+    '96x96', '72x72', '64x64', '48x48', '40x40', '36x36', '32x32', '24x24', '22x22', '20x20', '16x16']
 
 // Directories when we are trying to find an icon
 const iconDirs = uniq(flatten([
@@ -54,10 +37,7 @@ const iconDirs = uniq(flatten([
     path.join('/usr', 'share', 'app-install', 'icons')
 ])).filter(fs.existsSync)
 
-const iconExtension = [
-    'svg',
-    'png'
-]
+const iconExtension = ['svg', 'png']
 
 export const findIcon = (icon) => {
     if (path.isAbsolute(icon)) {
