@@ -2,44 +2,56 @@
     <div class="notification">
         <div class="top">
             <div class="left">
-                <img src="../assets/icons/laptop.svg" class="notificationicon"/>
+                <img src="../assets/icons/laptop.svg" class="notificationicon" />
                 {{notif.appname}} •
                 {{showntime}}
             </div>
             <div class="right">
-                <md-icon class="gear-icon">settings</md-icon>
+                <md-icon
+                    class="gear-icon"
+                    v-show="settings"
+                    @click.native="$emit('action','settings',notif.id)">settings</md-icon>
                 <md-icon class="clear-icon" @click.native="$emit('close', notif.id)">clear</md-icon>
             </div>
         </div>
         <div class="body" @click="bodyclick">
             <div class="text">
-                <div class="title" v-html=notif.title></div>
-                <div class="summary-or-body" v-html="notif.body || notif.summary">
-                </div>
+                <div class="title" v-html="notif.title"></div>
+                <div
+                    class="summary-or-body"
+                    v-html="(notif.body || notif.summary).replace(/\n/g, '<br />')"
+                ></div>
             </div>
-            <div v-if='notif.icon' class="notification-icon">
-                <img :src='notif.icon' />
+            <div v-if="notif.icon" class="notification-icon">
+                <img :src="notif.icon" />
             </div>
         </div>
         <div v-if="notif.actions && notif.actions.length" class="actions">
-            <md-button v-for='a in shownactions' :key='a.id' class="action" @click="$emit('action',notif.id,a.id)">{{a.text}}</md-button>
+            <md-button
+                v-for="a in shownactions"
+                :key="a.id"
+                class="action"
+                @click="$emit('action',a.id,notif.id)"
+            >{{a.text}}</md-button>
         </div>
     </div>
 </template>
 
 <script>
-
 export default {
     name: 'Notification',
-    props: {notif: Object},
+    props: { notif: Object },
     data() {
+        const $t = this.$t.bind(this);
         return {
-            now: Date.now()
-        };
+            now: Date.now(),
+            t: $t,
+            settings: this.notif.actions.includes('settings')
+        }
     },
     methods: {
         bodyclick() {
-            if(this.hasaction('default')) {
+            if (this.hasaction('default')) {
                 this.$emit('action', this.notif.id, 'default')
             } else {
                 this.$emit('close', this.notif.id)
@@ -51,34 +63,43 @@ export default {
     },
     computed: {
         realactions() {
-            return this.notif.actions.map((el, ind, arr) => ind % 2 ? {id: arr[ind-1], text: el}: undefined).filter(e=>e);
+            // Group by chunks of length 2
+            return this.notif.actions
+                .map((el, ind, arr) =>
+                    ind % 2 ? { id: arr[ind - 1], text: el } : undefined
+                )
+                .filter(e => e)
         },
         shownactions() {
-            return this.realactions.filter(e=>e.id.match(/^\d+$/))
+            return this.realactions.filter(e => !['default', 'settings'].includes(e.id))
+            // Previously only showed actions whose id was a number
+            // this.realactions.filter(e => e.id.match(/^\d+$/))
         },
         showntime() {
-            let diff = Math.floor((this.now - this.notif.time) / 60000);
-            return diff ? diff + 'm' : 'now';
+            const diff = Math.round((this.now - this.notif.time) / 60000)
+            return diff > 0 ? `${diff}m` : this.t('now')
         },
     },
     mounted() {
-        setInterval(_ => this.now = Date.now(), 60*1000);
-    }
-};
+        setInterval(() => {
+            this.now = Date.now()
+        }, 60e3)
+    },
+}
 </script>
 
 <style scoped>
 .notification {
     background: white;
-    width: 360px;
+    width: calc(100% - 10px);
     display: block;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'NotoColorEmoji', 'Roboto', sans-serif;
     margin-left: 5px;
     padding-top: 4px;
     border-radius: 3px;
     user-select: none;
     margin-bottom: 10px;
-    box-shadow: 0px 1px 8px 0px rgba(0,0,0,0.5);
+    box-shadow: 0px 1px 7px 0px rgba(0, 0, 0, 0.5);
 }
 .top {
     display: flex;
@@ -95,7 +116,7 @@ export default {
     font-size: 12.5px;
 }
 
-.notificationicon{
+.notificationicon {
     width: 16px;
     height: 16px;
     margin-right: 8px;
@@ -158,5 +179,14 @@ export default {
 .action {
     color: #1565c0;
     font-family: 'NotoColorEmoji', 'Roboto', sans-serif;
+}
+
+a {
+    color: #333333;
+}
+
+a:hover {
+    color: #1c1c1c;
+    text-decoration: none;
 }
 </style>

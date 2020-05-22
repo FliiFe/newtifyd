@@ -2,7 +2,11 @@
 
 This project aims at making a slick and modern notification daemon.
 
-It is currently in very early development and can be buggy.
+## Screenshots
+
+<center>
+<img src=img/screen1.png alt=screenshot-spotify></img>
+</center>
 
 ## Running
 
@@ -21,4 +25,11 @@ Then to start the daemon
 npm run start
 ```
 
-You need to make sure no other daemon is running.
+You need to make sure no other notification daemon is running.
+
+## TODO
+
+- [ ] Make packaging easier & distribute binaries
+- [ ] Support `image-data` hint
+- [ ] Custom middlewares
+- [ ] Custom CSS

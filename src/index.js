@@ -3,12 +3,14 @@ import NotificationStore from './NotificationStore'
 import Frontend from './Frontend'
 
 import log from './Logger'
+import c from './config'
+log.setDefaultLevel(c.loglevel)
 
 import { hostname } from 'os'
 import { readFile } from 'mz/fs'
 import { isAbsolute } from 'path'
-import DataURI from 'datauri'
-import ft from 'file-type'
+import DatauriParser from 'datauri/parser'
+import FileType from 'file-type'
 import { findIcon } from './IconRetreiver'
 
 import { load } from 'cheerio'
@@ -31,13 +33,12 @@ daemon.notify = async notification => {
 
     // Notification icon
     let imgpath =
-        notification.hints['image-path'] ||
-        notification.hints['image_path'] ||
+        (notification.hints['image-path'] && notification.hints['image-path'].value) ||
+        (notification.hints['image_path'] && notification.hints['image_path'].value) ||
         notification.app_icon
     if (imgpath) {
-        if (isAbsolute(imgpath)) {
-            imgpath = imgpath.replace('file://', '')
-        } else {
+        imgpath = imgpath.replace(/^file:\/\//, '')
+        if (!isAbsolute(imgpath)) {
             // Refers to a freedesktop icon. Unimplemented
             let path = findIcon(imgpath)
             if (path) imgpath = path
@@ -45,15 +46,15 @@ daemon.notify = async notification => {
         // We need to read it here, there is not enough time to wait for the frontend to do it
         let buff = await readFile(imgpath).catch(e => log.error(e))
         if (buff) {
-            let icon_ft = ft(buff)
+            let icon_ft = await FileType.fromBuffer(buff)
             if (icon_ft.ext === 'xml') icon_ft.ext = 'svg'
             log.debug('Reading buffer as', icon_ft)
-            let datauri = new DataURI()
-            datauri.format('.' + icon_ft.ext, buff)
-            notification.icon = datauri.content
+            let datauriparser = new DatauriParser()
+            notification.icon = datauriparser.format('.' + icon_ft.ext, buff).content
         }
     }
-    if (notification.hints['image-data']) log.debug('Got image-data:', notification.hints.icon_data)
+    // TODO: Fix this with dbus-next (with Variant)
+    // if (notification.hints['image-data']) log.debug('Got image-data:', notification.hints.icon_data)
 
     notification = htmlmiddleware(notification)
 
@@ -72,9 +73,11 @@ daemon.registerDbusService()
 
 front.action = (id, action) => {
     log.debug('Invoking action', action, 'on notification', id)
-    daemon.invokeAction(id, action)
+    daemon.ActionInvoked(parseInt(id), action)
     // if(store._store[id].defaulturl && action === 'default') opn(store._store[id].defaulturl);
-    store.close(id)
+
+    // Closing the notification on action is not expected behavior
+    // store.close(id)
 }
 
 store.addUpdateListener(store => front.update(store))
@@ -85,7 +88,7 @@ const htmlmiddleware = notification => {
     const text = a.text()
     const link = a.attr('href')
     if (text) notification.appname = text.toLowerCase()
-    $('body > *').not('b,i,u').each(function () {
+    $('body > *').not('b,i,u,a,img').each(function () {
         $(this).replaceWith('')
     })
     log.debug('Changing body to', $('body').html())

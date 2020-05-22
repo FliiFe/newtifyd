@@ -25,9 +25,11 @@ export default class NotificationStore {
             while (Object.keys('store').includes(id)) id++
         }
         this.store[id] = notif
-        let timeout = setTimeout(() => this.close(id), notif.expire_timeout > 0 ? notif.expire_timeout : 10 * 1000)
-        this.store[id].timeout = id
-        this.timeouts[id] = timeout
+        if (notif.expire_timeout > 0) {
+            let timeout = setTimeout(() => this.close(id), notif.expire_timeout)
+            this.store[id].timeout = id
+            this.timeouts[id] = timeout
+        }
 
         this.update()
         return id
