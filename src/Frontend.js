@@ -8,7 +8,7 @@ export default class Frontend {
         const server = (this.server = express())
 
         server.use(express.static('./front/dist'))
-        server.use('/localfs', express.static('/', {dotfiles: 'allow'}))
+        if(config.allowlocalfiles) server.use('/localfs', express.static('/', {dotfiles: 'allow'}))
         // server.use('/fs/', express.static('/'));
 
         // Necessary for transparency

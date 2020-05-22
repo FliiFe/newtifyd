@@ -21,4 +21,5 @@ export default Object.assign({
     devServer: false,
     loglevel: l.WARN,
     closeonclick: false,
+    allowlocalfiles: false,
 }, customconfig)
