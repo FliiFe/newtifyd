@@ -8,6 +8,7 @@ export default class Frontend {
         const server = (this.server = express())
 
         server.use(express.static('./front/dist'))
+        server.use('/localfs', express.static('/', {dotfiles: 'allow'}))
         // server.use('/fs/', express.static('/'));
 
         // Necessary for transparency
@@ -20,6 +21,7 @@ export default class Frontend {
                 standard: true,
                 secure: true,
                 corsEnabled: true,
+                bypassCSP: true
             }
         }])
 
@@ -60,7 +62,7 @@ export default class Frontend {
         })
     }
     update(store) {
-        if(!this.win || !this.win.webContents) return
+        if (!this.win || !this.win.webContents) return
         this.win.webContents.send('update', store)
         if (Object.keys(store).length) this.win.show()
         else setTimeout(() => this.win.hide(), 600)

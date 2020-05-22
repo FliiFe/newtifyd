@@ -7,7 +7,7 @@
         "start": "electron lib | tee /tmp/newtify.log",
         "buildback": "rm -rf lib && npx babel src -d lib",
         "buildfront": "cd front && npm run build",
-        "build": "npm run buildback && npm run buildfront",
+        "build": "npm run rebuild-modules && npm run buildback && npm run buildfront",
         "rebuild-modules": "npx electron-rebuild",
         "nodemon": "nodemon -i lib -x 'npm run buildback && npm run start'"
     },

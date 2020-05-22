@@ -88,10 +88,13 @@ const htmlmiddleware = notification => {
         e.replaceWith('')
     })
     $('body > *').each((_, e) => {
-        console.log(e.attribs)
         Object.keys(e.attribs).filter(name => !['href', 'src', 'alt'].includes(name))
             .forEach(a => $(e).removeAttr(a))
     })
+    $('body > img')
+        .each((_, e) =>
+            $(e).attr('src', $(e).attr('src').replace('file://', `http://localhost:${config.devServer ? '8080' : config.serverPort}/localfs/`))
+        )
     log.debug('Changing body to', $('body').html())
     notification.body = $('body').html()
     return notification
