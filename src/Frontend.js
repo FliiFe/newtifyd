@@ -60,14 +60,11 @@ export default class Frontend {
         })
     }
     update(store) {
-        try {
-            this.win.webContents.send('update', store)
-            if (Object.keys(store).length) this.win.show()
-            else setTimeout(() => this.win.hide(), 600)
-            this.win.webContents.send('config', config)
-        } catch (e) {
-            log.warn('Window not initialized yet')
-        }
+        if(!this.win || !this.win.webContents) return
+        this.win.webContents.send('update', store)
+        if (Object.keys(store).length) this.win.show()
+        else setTimeout(() => this.win.hide(), 600)
+        this.win.webContents.send('config', config)
     }
     set close(fun) {
         this._close = fun

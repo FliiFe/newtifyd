@@ -1,4 +1,5 @@
 import log from './Logger'
+import config from './config'
 
 export default class NotificationStore {
     constructor() {
@@ -19,14 +20,15 @@ export default class NotificationStore {
         if (id > 1e4) this._id_count = 0
         if (notif.replaces_id) {
             log.debug('Notification replaces id', notif.replaces_id)
-            log.debug('store has id:', Object.keys(this.store).includes(notif.replaces_id))
+            log.debug('store has id:', Object.keys(this.store).includes(notif.replaces_id.toString()))
             id = notif.replaces_id
         } else {
             while (Object.keys('store').includes(id)) id++
         }
         this.store[id] = notif
-        if (notif.expire_timeout > 0) {
-            let timeout = setTimeout(() => this.close(id), notif.expire_timeout)
+        if (notif.expire_timeout > 0 || config.maxtimeout) {
+            let timeout = setTimeout(() => this.close(id),
+                notif.expire_timeout > 0 ? Math.min(notif.expire_timeout, config.maxtimeout) : config.maxtimeout)
             this.store[id].timeout = id
             this.timeouts[id] = timeout
         }

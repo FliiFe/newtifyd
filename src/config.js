@@ -20,4 +20,5 @@ export default Object.assign({
     maxtimeout: 0,
     devServer: false,
     loglevel: l.WARN,
+    closeonclick: false,
 }, customconfig)

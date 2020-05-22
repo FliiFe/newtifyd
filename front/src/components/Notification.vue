@@ -52,7 +52,7 @@ export default {
     methods: {
         bodyclick() {
             if (this.hasaction('default')) {
-                this.$emit('action', this.notif.id, 'default')
+                this.$emit('action', 'default', this.notif.id)
             } else {
                 this.$emit('close', this.notif.id)
             }
@@ -180,12 +180,14 @@ export default {
     color: #1565c0;
     font-family: 'NotoColorEmoji', 'Roboto', sans-serif;
 }
+</style>
 
-a {
-    color: #333333;
+<style>
+a[href] {
+    color: #888888;
 }
 
-a:hover {
+a[href]:hover {
     color: #1c1c1c;
     text-decoration: none;
 }

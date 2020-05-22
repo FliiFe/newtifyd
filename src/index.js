@@ -3,8 +3,8 @@ import NotificationStore from './NotificationStore'
 import Frontend from './Frontend'
 
 import log from './Logger'
-import c from './config'
-log.setDefaultLevel(c.loglevel)
+import config from './config'
+log.setDefaultLevel(config.loglevel)
 
 import { hostname } from 'os'
 import { readFile } from 'mz/fs'
@@ -76,24 +76,24 @@ front.action = (id, action) => {
     daemon.ActionInvoked(parseInt(id), action)
     // if(store._store[id].defaulturl && action === 'default') opn(store._store[id].defaulturl);
 
-    // Closing the notification on action is not expected behavior
-    // store.close(id)
+    // Closing the notification on action is not expected behavior, but can be wanted behavior
+    if (config.closeonclick) store.close(id)
 }
 
 store.addUpdateListener(store => front.update(store))
 
 const htmlmiddleware = notification => {
     const $ = load(notification.body)
-    const a = $('a').first()
-    const text = a.text()
-    const link = a.attr('href')
-    if (text) notification.appname = text.toLowerCase()
-    $('body > *').not('b,i,u,a,img').each(function () {
-        $(this).replaceWith('')
+    $('body > *').not('b,i,u,a,img').each((_, e) => {
+        e.replaceWith('')
+    })
+    $('body > *').each((_, e) => {
+        console.log(e.attribs)
+        Object.keys(e.attribs).filter(name => !['href', 'src', 'alt'].includes(name))
+            .forEach(a => $(e).removeAttr(a))
     })
     log.debug('Changing body to', $('body').html())
     notification.body = $('body').html()
-    notification.defaulturl = link
     return notification
 }
 
